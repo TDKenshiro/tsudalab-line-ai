@@ -1,5 +1,5 @@
 Flask==3.0.2
 line-bot-sdk==3.5.0
-google-generativeai
+google-generativeai==0.5.4
 Pillow
 gunicorn==21.2.0
