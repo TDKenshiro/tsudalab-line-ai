@@ -1,6 +1,6 @@
 import os
 import io
-import re  # 【追加】テキストから数字だけを抜き出す最強ツール
+import re
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -14,7 +14,7 @@ line_bot_api = LineBotApi(os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_CHANNEL_SECRET"])
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
-# 【修正】一番確実な最新モデル名に変更
+# 最新のAIモデルを指定
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 user_states = {}
@@ -39,18 +39,16 @@ def handle_image(event):
         image_data = b""
         for chunk in message_content.iter_content():
             image_data += chunk
-        img = Image.open(io.BytesIO(image_data))
-
-        # プロンプトをより厳格に
-        prompt = "この画像に写っている植生を解析してください。竹(bamboo)、樹木(tree)、雑草(weed)の割合を合計100になるように推論してください。回答は必ずカンマ区切りの数字3つのみ（例：40,45,15）としてください。"
+            
+        # 【プロの書き方】with構文で画像を開き、処理が終わったら自動でメモリから完全に消去する
+        with Image.open(io.BytesIO(image_data)) as img:
+            prompt = "この画像に写っている植生を解析してください。竹(bamboo)、樹木(tree)、雑草(weed)の割合を合計100になるように推論してください。回答は必ずカンマ区切りの数字3つのみ（例：40,45,15）としてください。"
+            response = model.generate_content([prompt, img])
+            ai_result = response.text.strip()
         
-        response = model.generate_content([prompt, img])
-        ai_result = response.text.strip()
-        
-        # 【追加】RenderのログにAIの生返答を表示（後で確認用）
+        # ※ここに来た時点で、画像データは安全にシュレッダーにかけられています！
         print(f"【AIの生返答】: {ai_result}")
         
-        # 【修正】AIが「〇〇です」などと余計な文字をつけても、数字だけを強引に抽出する
         numbers = re.findall(r'\d+', ai_result)
         
         if len(numbers) >= 3:
@@ -70,7 +68,6 @@ def handle_image(event):
         )
 
     except Exception as e:
-        # 【追加】Renderのログにエラーの本当の原因を表示
         print(f"【エラー発生】: {e}")
         line_bot_api.push_message(user_id, TextSendMessage(text="申し訳ありません、画像の解析に失敗しました。別の写真でお試しください🙇‍♂️"))
 
@@ -90,7 +87,7 @@ def handle_text(event):
             cost = (area_sqm * (bamboo_pct/100) * 2500) + (area_sqm * (tree_pct/100) * 1000) + (area_sqm * (weed_pct/100) * 500)
             final_cost = int(cost)
 
-            reply_text = (f"面積（{area_sqm}㎡）から算出した概算費用は...\n\n👉 【 {final_cost:,} 円 】 です！\n\n※資源化による処分費カットを適用済みの価格です。\n※正確な金額は現地調査にて確定いたします。")
+            reply_text = (f"面積（{area_sqm}㎡）から算出した概算費用は...\n\n👉 【 {final_cost:,} 円 】 です！\n\n※AIでの分析のため、実際の料金とは異なります。\n※正確な金額は現地調査にて確定いたします。\n※後日こちらのLINEへ担当者から連絡が来ます。")
             
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
             del user_states[user_id]
