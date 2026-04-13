@@ -87,7 +87,7 @@ def handle_text(event):
             tree_pct = state['tree']
             weed_pct = state['weed']
             
-            cost = (area_sqm * (bamboo_pct/100) * 4000) + (area_sqm * (tree_pct/100) * 3000) + (area_sqm * (weed_pct/100) * 500)
+            cost = (area_sqm * (bamboo_pct/100) * 2500) + (area_sqm * (tree_pct/100) * 1000) + (area_sqm * (weed_pct/100) * 500)
             final_cost = int(cost)
 
             reply_text = (f"面積（{area_sqm}㎡）から算出した概算費用は...\n\n👉 【 {final_cost:,} 円 】 です！\n\n※資源化による処分費カットを適用済みの価格です。\n※正確な金額は現地調査にて確定いたします。")
