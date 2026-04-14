@@ -66,7 +66,7 @@ def handle_image(event):
         # 【変更】面積だけでなく、伐採の希望範囲も聞くようにメッセージを変更
         reply_msg = (f"✨解析が完了しました！✨\n"
                      f"🎋 竹・笹: 約{bamboo_pct}%\n🌳 樹木: 約{tree_pct}%\n🌿 雑草: 約{weed_pct}%\n\n"
-                     f"次に、対象の「面積（㎡）」と「伐採したい範囲・種類」をメッセージで教えてください！\n\n"
+                     f"次に、対象の「面積（平米・㎡）」と「伐採したい範囲・種類」をメッセージで教えてください！\n\n"
                      f"（例：「150平米、竹だけ切って」「50㎡、全部お願いします」など）")
         
         line_bot_api.push_message(user_id, TextSendMessage(text=reply_msg))
