@@ -134,10 +134,10 @@ def handle_text(event):
             target_names = []
             
             if calc_bamboo == 1:
-                cost += (area_sqm * (bamboo_pct/100) * 4000)
+                cost += (area_sqm * (bamboo_pct/100) * 2500)
                 target_names.append("🎋 竹・笹")
             if calc_tree == 1:
-                cost += (area_sqm * (tree_pct/100) * 3000)
+                cost += (area_sqm * (tree_pct/100) * 1500)
                 target_names.append("🌳 樹木")
             if calc_weed == 1:
                 cost += (area_sqm * (weed_pct/100) * 500)
@@ -151,8 +151,9 @@ def handle_text(event):
                           f"📐 面積: {area_sqm}㎡\n"
                           f"🎯 対象: {target_str}\n"
                           f"👉 概算費用: 【 {final_cost:,} 円 】 です！\n\n"
-                          f"※資源化による処分費カットを適用済みの価格です。\n"
-                          f"※正確な金額は現地調査にて確定いたします。")
+                          f"※AI分析のため、実際の料金と異なる場合があります。\n"
+                          f"※正確な金額は現地調査にて確定いたします。\n"
+                          f"後日こちらのLINEへ担当者から連絡いたします。")
             
             line_bot_api.push_message(user_id, TextSendMessage(text=reply_text))
             
