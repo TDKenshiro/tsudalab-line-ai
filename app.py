@@ -10,6 +10,10 @@ from PIL import Image
 
 app = Flask(__name__)
 
+@app.route("/")
+def keep_alive():
+    return "OK"
+
 line_bot_api = LineBotApi(os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_CHANNEL_SECRET"])
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
